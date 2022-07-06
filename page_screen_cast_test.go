@@ -17,42 +17,45 @@ func TestPageScreenCastAvi(t *testing.T) {
 	//g := setup(t)
 
 	{
-		b := rod.New().MustConnect()
-		p := b.MustPage("https://www.google.com").MustWaitLoad()
-
-		time.Sleep(10 * time.Second)
-		fmt.Println("slept 10 seconds")
+		browser := rod.New().MustConnect()
+		page := browser.MustPage("http://www.google.com").MustWaitLoad()
 
 		videoFrames := []rod.VideoFrame{}
 		fps := 25
 
 		// ScreenCastRecord listen PageScreenCastFrame and save data into videoFrames
-		aviWriter, err := p.ScreenCastRecordAvi("sample.avi", &videoFrames, fps) // Only support .avi video file & frame per second
+		aviWriter, err := page.ScreenCastRecordAvi("sample.avi", &videoFrames, fps) // Only support .avi video file & frame per second
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		// ScreenCastStart start listening ScreenCastRecord
-		err = p.ScreenCastStart(100) // Image quality
+		err = page.ScreenCastStart(50) // Image quality
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		fmt.Println("sleep 10 seconds")
-		time.Sleep(3 * time.Second)
+		fmt.Println("sleep 10 seconds start: ", time.Now())
+		time.Sleep(6 * time.Second)
+		
+		page.Navigate("https://dayspedia.com/time/online/")
+		page.MustWaitNavigation()
+		page.MustWaitLoad()
+		time.Sleep(4 * time.Second)
 
-		p.Navigate("https://www.youtube.com")
-
-		time.Sleep(7 * time.Second)
+		page.Navigate("http://www.google.com")
+		page.MustWaitNavigation()
+		page.MustWaitLoad()
+		time.Sleep(4 * time.Second)
 
 		// ScreenCastStop stop listening ScreenCastRecord and convert the videoFrames data into avi file
-		err = p.ScreenCastStopAvi(aviWriter, &videoFrames, fps)
+		err = page.ScreenCastStopAvi(aviWriter, &videoFrames, fps)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		p.MustClose()
-		b.MustClose()
+		page.MustClose()
+		browser.MustClose()
 	}
 }
 
