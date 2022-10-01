@@ -1,4 +1,4 @@
-module github.com/peerfekt/rod
+module github.com/peerfekt/go-rod
 
 go 1.16
 
